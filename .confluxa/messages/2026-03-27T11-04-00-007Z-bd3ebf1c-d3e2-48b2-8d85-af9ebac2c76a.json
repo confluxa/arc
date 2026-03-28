@@ -1,0 +1,8 @@
+{
+  "task_id": "api",
+  "agent": "claude",
+  "type": "proposal",
+  "content": "Use GraphQL for flexible client queries",
+  "id": "bd3ebf1c-d3e2-48b2-8d85-af9ebac2c76a",
+  "timestamp": "2026-03-27T11:04:00.007Z"
+}

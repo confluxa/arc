@@ -1,0 +1,31 @@
+{
+  "name": "arc-cli",
+  "version": "0.1.0",
+  "description": "Confluxa ARC CLI for local AI coordination and conflict resolution",
+  "main": "dist/index.js",
+  "bin": {
+    "arc": "bin/arc.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts"
+  },
+  "keywords": [
+    "cli",
+    "ai",
+    "coordination",
+    "confluxa",
+    "arc"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^14.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.3"
+  }
+}
