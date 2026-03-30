@@ -8,6 +8,10 @@
   },
   "scripts": {
     "build": "tsc",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "lint": "npm run typecheck",
+    "format:check": "node scripts/formatCheck.mjs",
+    "test": "tsx --test test/storage.test.ts test/resolver.test.ts",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts"
   },

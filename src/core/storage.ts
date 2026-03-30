@@ -7,6 +7,39 @@ const CONTEXT_FILE = "context.json";
 const MESSAGES_DIR = "messages";
 const TASKS_DIR = "tasks";
 
+function isArcMessage(value: unknown): value is ArcMessage {
+  if (!value || typeof value !== "object") return false;
+  const msg = value as Record<string, unknown>;
+  const type = msg.type;
+
+  return (
+    typeof msg.id === "string" &&
+    typeof msg.task_id === "string" &&
+    typeof msg.agent === "string" &&
+    typeof msg.content === "string" &&
+    typeof msg.timestamp === "string" &&
+    (type === "proposal" || type === "result" || type === "note")
+  );
+}
+
+async function safeParseMessageFile(fullPath: string): Promise<ArcMessage | null> {
+  let raw: string;
+  try {
+    raw = await fs.readFile(fullPath, "utf-8");
+  } catch {
+    return null;
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw) as unknown;
+  } catch {
+    return null;
+  }
+
+  return isArcMessage(parsed) ? parsed : null;
+}
+
 export function getRootPath(cwd: string = process.cwd()): string {
   return path.join(cwd, ROOT_DIR);
 }
@@ -63,18 +96,26 @@ export async function saveMessage(message: ArcMessage, cwd: string = process.cwd
 export async function listMessages(cwd: string = process.cwd()): Promise<ArcMessage[]> {
   await ensureInitialized(cwd);
   const messagesPath = getMessagesPath(cwd);
-  const files = await fs.readdir(messagesPath);
+  let files: string[];
+  try {
+    files = await fs.readdir(messagesPath);
+  } catch (err: unknown) {
+    const code = (err as { code?: string })?.code;
+    if (code === "ENOENT") return [];
+    throw err;
+  }
   const jsonFiles = files.filter((file) => file.endsWith(".json"));
 
   const parsed = await Promise.all(
     jsonFiles.map(async (file) => {
       const fullPath = path.join(messagesPath, file);
-      const raw = await fs.readFile(fullPath, "utf-8");
-      return JSON.parse(raw) as ArcMessage;
+      return safeParseMessageFile(fullPath);
     })
   );
 
-  return parsed.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+  return parsed
+    .filter((msg): msg is ArcMessage => msg !== null)
+    .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
 }
 
 export async function listMessagesByTask(taskId: string, cwd: string = process.cwd()): Promise<ArcMessage[]> {
@@ -85,17 +126,29 @@ export async function listMessagesByTask(taskId: string, cwd: string = process.c
 export async function deleteMessagesByTask(taskId: string, cwd: string = process.cwd()): Promise<number> {
   await ensureInitialized(cwd);
   const messagesPath = getMessagesPath(cwd);
-  const files = await fs.readdir(messagesPath);
+  let files: string[];
+  try {
+    files = await fs.readdir(messagesPath);
+  } catch (err: unknown) {
+    const code = (err as { code?: string })?.code;
+    if (code === "ENOENT") return 0;
+    throw err;
+  }
   const jsonFiles = files.filter((file) => file.endsWith(".json"));
   let deleted = 0;
 
   for (const file of jsonFiles) {
     const fullPath = path.join(messagesPath, file);
-    const raw = await fs.readFile(fullPath, "utf-8");
-    const parsed = JSON.parse(raw) as ArcMessage;
+    const parsed = await safeParseMessageFile(fullPath);
+    if (!parsed) continue;
+
     if (parsed.task_id === taskId) {
-      await fs.unlink(fullPath);
-      deleted += 1;
+      try {
+        await fs.unlink(fullPath);
+        deleted += 1;
+      } catch {
+        // If a file disappears between readdir and unlink, treat as best-effort.
+      }
     }
   }
 

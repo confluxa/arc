@@ -1,8 +1,0 @@
-{
-  "task_id": "auth",
-  "agent": "claude",
-  "type": "proposal",
-  "content": "Use OAuth",
-  "id": "babad9d0-b7fb-47c0-9103-074e2b8a2c36",
-  "timestamp": "2026-03-27T11:46:38.623Z"
-}
