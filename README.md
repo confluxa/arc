@@ -1,34 +1,38 @@
 # Confluxa (ARC)
 
-Make multiple AI agents work together.
+**Make multiple AI agents work together.**
 
-Resolve conflicting outputs from different AI tools into a unified approach.
+When different AI tools give conflicting answers, ARC helps you converge on a single, coherent approach.
 
 ## Demo
 
+> Two AI agents disagree. ARC resolves.
+
 ![Demo](demo.svg)
 
-## Problem
+## The Problem
 
-- Multiple AI tools often return different answers for the same task.
-- There is no simple shared flow to reconcile those answers.
-- Teams end up manually comparing outputs and deciding by hand.
-- This slows execution and creates uncertainty.
+Using multiple AI tools often leads to:
 
-## Solution
+- Different answers for the same question
+- No shared context between tools
+- Manual comparison and decision-making
+- Slower execution and uncertainty
 
-ARC gives AI agents a shared local workflow:
+## The Solution
+
+ARC introduces a simple coordination layer:
 
 - Agents publish suggestions for a task.
-- ARC detects when suggestions conflict.
+- ARC detects conflicts automatically.
 - ARC produces a unified, structured resolution.
 
 ## Example
 
-gpt -> "Use JWT"  
-claude -> "Use OAuth"
+gpt → "Use JWT"  
+claude → "Use OAuth"
 
-ARC -> Recommended approach:
+**ARC → Recommended approach:**
 
 - JWT for internal services
 - OAuth for external integrations
@@ -45,14 +49,18 @@ arc publish --task auth --type proposal --content "Use OAuth" --agent claude
 arc resolve auth
 ```
 
-## Features
+## Why ARC?
 
 - Local-first (no backend required)
-- AI-agnostic
-- Conflict detection
-- Structured resolution
+- Works with any AI tool
+- Makes conflicting outputs actionable
+- Turns multiple answers into one decision
 
 ## Philosophy
 
 Confluxa is not another AI model.  
 It is a coordination layer between AIs.
+
+## Status
+
+Early prototype. Feedback welcome.
