@@ -3,36 +3,33 @@
 export PS1="$ "
 
 clear
-echo "Resolving conflicting AI outputs"
-sleep 1
+echo "ARC decision engine — conflicting agents → one decision"
+sleep 0.8
 
 echo ""
 echo "→ Initializing workspace"
-sleep 1
+sleep 0.6
 echo "$ arc init"
 arc init
-sleep 1.2
+sleep 0.9
 
 echo ""
-echo "→ Asking first AI agent (GPT)"
-echo "   Suggestion: Use JWT"
-sleep 1
-echo "$ arc publish --task auth --type proposal --content \"Use JWT\" --agent gpt"
-arc publish --task auth --type proposal --content "Use JWT" --agent gpt
-sleep 1.2
+echo "→ Agent 1 (GPT, proposer): Use JWT"
+sleep 0.5
+echo "$ arc publish --task auth --type proposal --content \"Use JWT\" --agent gpt --role proposer"
+arc publish --task auth --type proposal --content "Use JWT" --agent gpt --role proposer
+sleep 0.9
 
 echo ""
-echo "→ Asking second AI agent (Claude)"
-echo "   Suggestion: Use OAuth"
-sleep 1
-echo "$ arc publish --task auth --type proposal --content \"Use OAuth\" --agent claude"
-arc publish --task auth --type proposal --content "Use OAuth" --agent claude
-sleep 1.2
+echo "→ Agent 2 (Claude, validator): Use OAuth"
+sleep 0.5
+echo "$ arc publish --task auth --type proposal --content \"Use OAuth\" --agent claude --role validator"
+arc publish --task auth --type proposal --content "Use OAuth" --agent claude --role validator
+sleep 0.9
 
 echo ""
-echo "→ Multiple AI agents disagree"
-echo "→ Resolving conflict with ARC"
-sleep 1.2
+echo "→ Run decision engine (Decision, Confidence, Reasoning, Trade-offs)"
+sleep 0.8
 
 echo ""
 echo "$ arc resolve auth"
@@ -41,7 +38,7 @@ arc resolve auth
 # Force rendering buffer (VERY IMPORTANT)
 echo ""
 echo "----------------------------------------"
-echo "ARC generated a unified approach"
+echo "Structured decision — not just a diff"
 echo "----------------------------------------"
 
 # Keep terminal alive with visible frames

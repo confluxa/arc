@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import { normalizeRole } from "../core/roles";
 import { listMessagesByTask } from "../core/storage";
 import { formatTimestamp } from "../utils/time";
 
@@ -26,7 +27,9 @@ export async function runView(taskId: string): Promise<void> {
   for (const [agent, agentMessages] of grouped.entries()) {
     console.log(chalk.bold(`${chalk.cyan(agent)}`));
     for (const msg of agentMessages) {
-      console.log(`- ${chalk.gray(formatTimestamp(msg.timestamp))} [${msg.type}] ${msg.content}`);
+      console.log(
+        `- ${chalk.gray(formatTimestamp(msg.timestamp))} [${msg.type}] [${normalizeRole(msg.role)}] ${msg.content}`
+      );
     }
     console.log("");
   }

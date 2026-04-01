@@ -14,4 +14,3 @@ export async function runClean(taskId: string): Promise<void> {
 
   console.log(`Cleared all messages for task ${normalizedTaskId}`);
 }
-

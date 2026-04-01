@@ -4,10 +4,17 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import os from "node:os";
 
-import { deleteMessagesByTask, initializeWorkspace, listMessages, saveMessage } from "../src/core/storage";
+import {
+  deleteMessagesByTask,
+  initializeWorkspace,
+  listMessages,
+  saveMessage
+} from "../src/core/storage";
 import type { ArcMessage } from "../src/core/types";
 
-function makeMsg(partial: Partial<ArcMessage> & Pick<ArcMessage, "id" | "task_id" | "content">): ArcMessage {
+function makeMsg(
+  partial: Partial<ArcMessage> & Pick<ArcMessage, "id" | "task_id" | "content">
+): ArcMessage {
   return {
     agent: partial.agent ?? "agent",
     type: partial.type ?? "proposal",
@@ -80,4 +87,3 @@ test("storage deleteMessagesByTask skips corrupt files and deletes only matching
     await fs.rm(cwd, { recursive: true, force: true });
   }
 });
-

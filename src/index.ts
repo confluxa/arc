@@ -8,7 +8,7 @@ import { runPublish } from "./commands/publish";
 import { runResolve } from "./commands/resolve";
 import { runStatus } from "./commands/status";
 import { runView } from "./commands/view";
-import { MessageType } from "./core/types";
+import type { AgentRole, MessageType } from "./core/types";
 import { error as logError } from "./utils/logger";
 
 const program = new Command();
@@ -36,6 +36,7 @@ program
   .requiredOption("--type <type>", "Message type: proposal|result|note")
   .requiredOption("--content <content>", "Message content")
   .requiredOption("--agent <agent>", "Agent name")
+  .option("--role <role>", "Agent role: proposer | critic | validator", "proposer")
   .action(async (options) => {
     try {
       const validTypes: MessageType[] = ["proposal", "result", "note"];
@@ -43,11 +44,17 @@ program
         throw new Error("Invalid --type. Allowed values: proposal, result, note.");
       }
 
+      const validRoles: AgentRole[] = ["proposer", "critic", "validator"];
+      if (!validRoles.includes(options.role)) {
+        throw new Error("Invalid --role. Allowed values: proposer, critic, validator.");
+      }
+
       await runPublish({
         task: options.task,
         type: options.type,
         content: options.content,
-        agent: options.agent
+        agent: options.agent,
+        role: options.role
       });
     } catch (error) {
       handleCliError(error);
@@ -112,7 +119,7 @@ program
 
 program
   .command("demo")
-  .description("Create sample messages and run ARC resolution")
+  .description("Run a quick decision-engine demo (conflict → structured decision)")
   .argument("[scenario]", "Demo scenario: auth | api | database")
   .action(async (scenario?: string) => {
     try {

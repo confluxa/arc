@@ -1,57 +1,66 @@
+import { buildConfidenceContext, scoreConfidence, type ConfidenceScorer } from "./confidence";
+import { analyzeAndResolve } from "./heuristics";
 import { ArcMessage, ResolveResult } from "./types";
 
-export function resolveTaskMessages(messages: ArcMessage[]): ResolveResult {
+export interface ResolveTaskOptions {
+  /** Override default confidence policy (e.g. for tests or future weighted scoring). */
+  scoreConfidence?: ConfidenceScorer;
+}
+
+export function resolveTaskMessages(
+  messages: ArcMessage[],
+  options?: ResolveTaskOptions
+): ResolveResult {
+  const confidence = scoreConfidence(buildConfidenceContext(messages), options?.scoreConfidence);
+
   if (messages.length === 0) {
     return {
       status: "consensus",
+      domain: "unknown",
+      relationship: "consensus",
+      strategy: "defer",
       messages,
+      decision: "No messages found for this task.",
+      confidence,
+      reasoning: ["No agent proposals were available to evaluate."],
+      tradeoffs: [],
+      alternatives: [],
       resolution: "No messages found for this task."
     };
   }
 
-  const uniqueContents = [...new Set(messages.map((msg) => msg.content.trim()))];
-
-  if (uniqueContents.length <= 1) {
-    return {
-      status: "consensus",
-      messages,
-      resolution: uniqueContents[0] || "No actionable content found."
-    };
+  const groupedByContent = new Map<string, Set<string>>();
+  for (const msg of messages) {
+    const content = msg.content.trim();
+    const agents = groupedByContent.get(content) ?? new Set<string>();
+    agents.add(msg.agent);
+    groupedByContent.set(content, agents);
   }
+  const uniqueContents = [...groupedByContent.keys()];
+  const alternatives = uniqueContents.map((content) => ({
+    content,
+    agents: [...(groupedByContent.get(content) ?? new Set<string>())].sort()
+  }));
 
-  const votes = uniqueContents
-    .map((content) => ({
-      content,
-      count: messages.filter((msg) => msg.content.trim() === content).length
-    }))
-    .sort((a, b) => b.count - a.count || a.content.localeCompare(b.content));
+  const rankedAlternatives = [...alternatives].sort(
+    (a, b) => b.agents.length - a.agents.length || a.content.localeCompare(b.content)
+  );
 
-  const top = votes[0];
-  const alternatives = votes.slice(1).map((entry) => entry.content);
-  const lowerContents = uniqueContents.map((item) => item.toLowerCase());
-  const hasJwt = lowerContents.some((item) => item.includes("jwt"));
-  const hasOauth = lowerContents.some((item) => item.includes("oauth"));
-  const hasRest = lowerContents.some((item) => item.includes("rest"));
-  const hasGraphql = lowerContents.some((item) => item.includes("graphql"));
-  const hasSql = lowerContents.some((item) => item.includes("sql"));
-  const hasNosql =
-    lowerContents.some((item) => item.includes("nosql")) ||
-    lowerContents.some((item) => item.includes("mongo")) ||
-    lowerContents.some((item) => item.includes("document"));
-  const mergedSuggestion =
-    hasJwt && hasOauth
-      ? "Use JWT for internal services and OAuth for external integrations"
-      : hasRest && hasGraphql
-        ? "Use REST for stable public endpoints and GraphQL for client-specific aggregation needs"
-        : hasSql && hasNosql
-          ? "Use SQL for transactional core data and NoSQL for high-velocity or flexible-schema workloads"
-      : `Primary suggestion: "${top.content}". Alternatives: ${alternatives
-          .map((item) => `"${item}"`)
-          .join(", ")}.`;
+  const analysis = analyzeAndResolve(messages, uniqueContents, alternatives);
+
+  const status: ResolveResult["status"] = uniqueContents.length <= 1 ? "consensus" : "conflict";
 
   return {
-    status: "conflict",
+    status,
     messages,
-    resolution: mergedSuggestion
+    domain: analysis.domain,
+    relationship: analysis.relationship,
+    strategy: analysis.strategy,
+    decision: analysis.decision,
+    confidence,
+    reasoning: analysis.reasoning,
+    tradeoffs: analysis.tradeoffs,
+    alternatives: rankedAlternatives,
+    resolution: analysis.decision
   };
 }

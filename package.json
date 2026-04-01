@@ -10,7 +10,8 @@
     "build": "tsc",
     "typecheck": "tsc -p tsconfig.test.json",
     "lint": "npm run typecheck",
-    "format:check": "node scripts/formatCheck.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "tsx --test test/storage.test.ts test/resolver.test.ts",
     "demo:clean": "rm -rf .confluxa/ demo.cast demo.svg",
     "demo:record": "asciinema rec demo.cast --rows 45 --cols 120 -c \"./demo.sh\"",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.5.2",
+    "prettier": "^3.5.3",
     "tsx": "^4.20.5",
     "typescript": "^5.9.3"
   }

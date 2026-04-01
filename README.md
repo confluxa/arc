@@ -37,10 +37,10 @@ node bin/arc.js demo
 
 Using multiple AI tools often leads to:
 
-* Different answers for the same question
-* No shared context between tools
-* Manual comparison and decision-making
-* Slower execution and uncertainty
+- Different answers for the same question
+- No shared context between tools
+- Manual comparison and decision-making
+- Slower execution and uncertainty
 
 ---
 
@@ -48,9 +48,9 @@ Using multiple AI tools often leads to:
 
 ARC introduces a simple coordination layer:
 
-* Agents publish suggestions for a task
-* ARC detects conflicts automatically
-* ARC produces a unified, structured resolution
+- Agents publish suggestions for a task
+- ARC detects conflicts automatically
+- ARC produces a unified, structured resolution
 
 ---
 
@@ -61,8 +61,8 @@ claude → "Use OAuth"
 
 **ARC → Recommended approach (unified decision):**
 
-* JWT for internal services
-* OAuth for external integrations
+- JWT for internal services
+- OAuth for external integrations
 
 ---
 
@@ -98,10 +98,10 @@ arc demo
 
 ## Why ARC?
 
-* Local-first (no backend required)
-* Works with any AI tool
-* Makes conflicting outputs actionable
-* Turns multiple answers into one decision
+- Local-first (no backend required)
+- Works with any AI tool
+- Makes conflicting outputs actionable
+- Turns multiple answers into one decision
 
 ---
 

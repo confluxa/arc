@@ -1,5 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { isAgentRole } from "./roles";
 import { ArcMessage } from "./types";
 
 const ROOT_DIR = ".confluxa";
@@ -12,13 +13,16 @@ function isArcMessage(value: unknown): value is ArcMessage {
   const msg = value as Record<string, unknown>;
   const type = msg.type;
 
+  const roleOk = msg.role === undefined || msg.role === null || isAgentRole(msg.role);
+
   return (
     typeof msg.id === "string" &&
     typeof msg.task_id === "string" &&
     typeof msg.agent === "string" &&
     typeof msg.content === "string" &&
     typeof msg.timestamp === "string" &&
-    (type === "proposal" || type === "result" || type === "note")
+    (type === "proposal" || type === "result" || type === "note") &&
+    roleOk
   );
 }
 
@@ -84,7 +88,10 @@ export async function initializeWorkspace(cwd: string = process.cwd()): Promise<
   }
 }
 
-export async function saveMessage(message: ArcMessage, cwd: string = process.cwd()): Promise<string> {
+export async function saveMessage(
+  message: ArcMessage,
+  cwd: string = process.cwd()
+): Promise<string> {
   await ensureInitialized(cwd);
   const messagesPath = getMessagesPath(cwd);
   const fileName = `${message.timestamp.replace(/[:.]/g, "-")}-${message.id}.json`;
@@ -118,12 +125,18 @@ export async function listMessages(cwd: string = process.cwd()): Promise<ArcMess
     .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
 }
 
-export async function listMessagesByTask(taskId: string, cwd: string = process.cwd()): Promise<ArcMessage[]> {
+export async function listMessagesByTask(
+  taskId: string,
+  cwd: string = process.cwd()
+): Promise<ArcMessage[]> {
   const all = await listMessages(cwd);
   return all.filter((item) => item.task_id === taskId);
 }
 
-export async function deleteMessagesByTask(taskId: string, cwd: string = process.cwd()): Promise<number> {
+export async function deleteMessagesByTask(
+  taskId: string,
+  cwd: string = process.cwd()
+): Promise<number> {
   await ensureInitialized(cwd);
   const messagesPath = getMessagesPath(cwd);
   let files: string[];
@@ -155,9 +168,12 @@ export async function deleteMessagesByTask(taskId: string, cwd: string = process
   return deleted;
 }
 
-export async function getWorkspaceStatus(
-  cwd: string = process.cwd()
-): Promise<{ workspaceOk: boolean; tasksCount: number; messagesCount: number; recentTasks: string[] }> {
+export async function getWorkspaceStatus(cwd: string = process.cwd()): Promise<{
+  workspaceOk: boolean;
+  tasksCount: number;
+  messagesCount: number;
+  recentTasks: string[];
+}> {
   const rootPath = getRootPath(cwd);
 
   try {

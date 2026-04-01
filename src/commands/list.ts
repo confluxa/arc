@@ -1,3 +1,4 @@
+import { normalizeRole } from "../core/roles";
 import { listMessagesByTask } from "../core/storage";
 import { info } from "../utils/logger";
 
@@ -14,6 +15,8 @@ export async function runList(taskId: string): Promise<void> {
 
   info(`Messages for task "${taskId}":`);
   for (const msg of messages) {
-    console.log(`- [${msg.timestamp}] (${msg.type}) ${msg.agent}: ${msg.content}`);
+    console.log(
+      `- [${msg.timestamp}] (${msg.type}) ${msg.agent} [${normalizeRole(msg.role)}]: ${msg.content}`
+    );
   }
 }

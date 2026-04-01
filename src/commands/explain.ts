@@ -11,5 +11,7 @@ export function runExplain(): void {
   console.log("3. ARC generates a clear resolution digest for next-step execution.");
   console.log("");
   console.log(chalk.bold("Why it matters:"));
-  console.log("You get faster multi-agent collaboration with less confusion and clearer decisions.");
+  console.log(
+    "You get faster multi-agent collaboration with less confusion and clearer decisions."
+  );
 }
