@@ -1,8 +1,0 @@
-{
-  "task_id": "database",
-  "agent": "claude",
-  "type": "proposal",
-  "content": "Use NoSQL for scale and flexible schema",
-  "id": "ddc82627-7468-4c7a-b72a-25c376845ac8",
-  "timestamp": "2026-03-27T11:04:02.639Z"
-}

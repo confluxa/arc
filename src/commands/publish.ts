@@ -30,8 +30,9 @@ export async function runPublish(options: PublishOptions): Promise<void> {
     timestamp: new Date().toISOString()
   };
 
-  const filePath = await saveMessage(message);
+  await saveMessage(message);
   success(`Published ${message.type} message for task "${message.task_id}"`);
   info(`  Agent: ${message.agent}`);
-  info(`  Saved: ${filePath}`);
+  info("  Saved to workspace");
+  console.log("");
 }

@@ -12,6 +12,10 @@
     "lint": "npm run typecheck",
     "format:check": "node scripts/formatCheck.mjs",
     "test": "tsx --test test/storage.test.ts test/resolver.test.ts",
+    "demo:clean": "rm -rf .confluxa/ demo.cast demo.svg",
+    "demo:record": "asciinema rec demo.cast --rows 45 --cols 120 -c \"./demo.sh\"",
+    "demo:render": "svg-term --in demo.cast --out demo.svg --window --padding 20",
+    "demo:create": "npm run demo:clean && npm run demo:record && npm run demo:render",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts"
   },

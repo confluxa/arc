@@ -1,139 +1,58 @@
-# Confluxa ARC CLI (`arc`)
+# Confluxa (ARC)
 
-`arc` is a local-first coordination CLI for multiple AI agents and tools.
+Make multiple AI agents work together.
 
-It is not an LLM. It is the shared messaging and conflict-resolution layer between AIs, built around a local `.confluxa/` folder.
+Resolve conflicting outputs from different AI tools into a unified approach.
 
-## Why ARC
+## Demo
 
-When multiple agents collaborate on the same task, they often produce competing outputs. ARC keeps that process structured and readable:
+![Demo](demo.svg)
 
-- publish proposals/results/notes into a shared local workspace
-- inspect task history quickly
-- detect conflicts and generate a digest resolution
-- keep everything file-based and offline-friendly
+## Problem
 
-## Quick start
+- Multiple AI tools often return different answers for the same task.
+- There is no simple shared flow to reconcile those answers.
+- Teams end up manually comparing outputs and deciding by hand.
+- This slows execution and creates uncertainty.
 
-```bash
-npm install
-npm run build
-npm link
-```
+## Solution
 
-Run a complete demo in one command:
+ARC gives AI agents a shared local workflow:
 
-```bash
-arc demo
-```
+- Agents publish suggestions for a task.
+- ARC detects when suggestions conflict.
+- ARC produces a unified, structured resolution.
 
-Run targeted demo scenarios:
+## Example
 
-```bash
-arc demo auth
-arc demo api
-arc demo database
-```
+gpt -> "Use JWT"  
+claude -> "Use OAuth"
 
-## Core commands
+ARC -> Recommended approach:
 
-### Initialize workspace
+- JWT for internal services
+- OAuth for external integrations
+
+## Quick Start
 
 ```bash
 arc init
-```
 
-Creates:
+arc publish --task auth --type proposal --content "Use JWT" --agent gpt
 
-- `.confluxa/context.json`
-- `.confluxa/messages/`
-- `.confluxa/tasks/`
+arc publish --task auth --type proposal --content "Use OAuth" --agent claude
 
-### Publish a message
-
-```bash
-arc publish --task <task_id> --type <proposal|result|note> --content "<text>" --agent <name>
-```
-
-### View task messages
-
-```bash
-arc view auth
-```
-
-Grouped by agent with human-friendly timestamps.
-
-### Resolve a task
-
-```bash
-arc resolve auth
-arc resolve auth --json
-```
-
-- default: polished human-readable output
-- `--json`: machine-readable output only
-
-### Workspace status
-
-```bash
-arc status
-```
-
-Shows workspace health, message count, task count, and recent tasks.
-
-### Explain ARC quickly
-
-```bash
-arc explain
-```
-
-Prints a concise developer-focused explanation of what ARC does, how it works, and why it matters.
-
-## Demo-ready workflow
-
-```bash
-arc init
-arc publish --task auth --type proposal --content "Use JWT for APIs" --agent gpt
-arc publish --task auth --type proposal --content "Use OAuth for third-party integrations" --agent claude
 arc resolve auth
 ```
 
-## Text-based sample outputs
+## Features
 
-### `arc status`
+- Local-first (no backend required)
+- AI-agnostic
+- Conflict detection
+- Structured resolution
 
-```text
-Workspace: OK
-Tasks: 2
-Messages: 5
-Recent tasks:
-* auth
-* payment
-```
+## Philosophy
 
-### `arc resolve auth`
-
-```text
-=== ARC Resolution ===
-Task: auth
-
-Status: CONFLICT
-
-Agents involved:
-
-* gpt -> "Use JWT for APIs"
-* claude -> "Use OAuth for third-party integrations"
-
-Suggested Resolution:
-Use JWT for internal services and OAuth for external integrations
-```
-
-### `arc resolve auth --json`
-
-```json
-{
-  "status": "conflict",
-  "messages": [],
-  "resolution": "Use JWT for APIs and OAuth for third-party integrations"
-}
-```
+Confluxa is not another AI model.  
+It is a coordination layer between AIs.

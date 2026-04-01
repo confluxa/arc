@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import { runClean } from "./commands/clean";
 import { runDemo } from "./commands/demo";
 import { runExplain } from "./commands/explain";
 import { runInit } from "./commands/init";
@@ -82,6 +83,17 @@ program
   .action(async (task: string, options: { json?: boolean }) => {
     try {
       await runResolve(task, options);
+    } catch (error) {
+      handleCliError(error);
+    }
+  });
+
+program
+  .command("clean <task>")
+  .description("Delete all messages for a task")
+  .action(async (task: string) => {
+    try {
+      await runClean(task);
     } catch (error) {
       handleCliError(error);
     }

@@ -37,10 +37,12 @@ export async function runDemo(inputScenario?: string): Promise<void> {
   console.log(chalk.cyan("Step 1: Initializing ARC workspace..."));
   await runInit();
   await sleep(420);
+  console.log("");
 
   console.log(chalk.cyan("Step 2: Simulating multiple AI agents..."));
   await deleteMessagesByTask(taskId);
   await sleep(380);
+  console.log("");
 
   const first = demoMessages[0];
   const second = demoMessages[1];
@@ -48,13 +50,16 @@ export async function runDemo(inputScenario?: string): Promise<void> {
   console.log(chalk.cyan(`Step 3: Agent ${first.agent} proposes: ${first.content}`));
   await saveMessage({ ...first, id: createId(), timestamp: new Date().toISOString() });
   await sleep(500);
+  console.log("");
 
   console.log(chalk.cyan(`Step 4: Agent ${second.agent} proposes: ${second.content}`));
   await saveMessage({ ...second, id: createId(), timestamp: new Date().toISOString() });
   await sleep(500);
+  console.log("");
 
   console.log(chalk.cyan("Step 5: Detecting conflicts..."));
   await sleep(350);
+  console.log("");
 
   console.log(chalk.cyan("Step 6: Resolving..."));
   await sleep(420);
